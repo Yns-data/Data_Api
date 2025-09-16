@@ -1,7 +1,7 @@
 # type: ignore
 from fastapi import FastAPI, Query
 from datetime import datetime
-from Data_Api.src.sensor import MetricsGenerator
+from src.sensor import MetricsGenerator
 from fastapi.responses import JSONResponse
 import re
 from typing import Optional
