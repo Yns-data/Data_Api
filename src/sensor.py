@@ -1,9 +1,7 @@
-# type: ignore
 import hashlib
 from datetime import datetime
 import random
 
-# Typing helpers
 from typing import List, Dict
 
 
