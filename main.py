@@ -1,40 +1,25 @@
-from fastapi import FastAPI, Query
+from fastapi import Depends, FastAPI, Query
+from fastapi.security.api_key import APIKey
 from datetime import datetime
 from src.sensor import MetricsGenerator
+from src.utilities import process_dates
+from src.variables import EXAMPLE_INPUTS
+from src.utilities import get_api_key
 from fastapi.responses import JSONResponse
-import re
 from typing import Optional
+
+
+
 
 app = FastAPI()
 generator = MetricsGenerator(min_visitors=50, max_visitors=500)
 
-def process_dates(date: Optional[str], dates: Optional[list[str]], date_format: str, error_msg: str):
-    """Helper function to process dates and validate format"""
-    if not date and not dates:
-        return JSONResponse(
-            status_code=400,
-            content={"error": "You must provide at least one 'date' or 'dates' parameter"}
-        )
-
-    dates_to_process = ([date] if date else []) + (dates if dates else [])
-    
-    if any(not re.match(date_format, d) for d in dates_to_process):
-        return JSONResponse(
-            status_code=400,
-            content={"error": error_msg}
-        )
-
-    return dates_to_process
-exemple_inputs = {"single_date": "2020-01-01-01-01-01",
-                  "multiple_dates": ["2020-01-01-01-01-01", 
-                                     "2020-01-02-01-01-01",
-                                     "2020-01-03-01-01-01",
-                                     "2020-01-04-01-01-01"]}
 
 @app.get("/cities")
 def get_cities_api(
-    date: Optional[str] = Query(exemple_inputs["single_date"], description="Single date in YYYY-MM-DD-HH-MM-SS-MM-SS format"),
-    dates: Optional[list[str]] = Query(exemple_inputs["multiple_dates"], description="Multiple dates in YYYY-MM-DD-HH-MM-SS format")
+    date: Optional[str] = Query(EXAMPLE_INPUTS["single_date"], description="Single date in YYYY-MM-DD-HH-MM-SS-MM-SS format"),
+    dates: Optional[list[str]] = Query(EXAMPLE_INPUTS["multiple_dates"], description="Multiple dates in YYYY-MM-DD-HH-MM-SS format"),
+    api_key_header: APIKey = Depends(get_api_key)
 ):
     """
     GET route to obtain store cities for one or multiple dates.
@@ -64,8 +49,10 @@ def get_cities_api(
 
 @app.get("/pages_viewed")
 def get_pages_viewed_api(
-    date: Optional[str] = Query(exemple_inputs["single_date"], description="Single date in YYYY-MM-DD-HH-MM-SS-MM-SS format"),
-    dates: Optional[list[str]] = Query(exemple_inputs["multiple_dates"], description="Multiple dates in YYYY-MM-DD-HH-MM-SS format")
+    date: Optional[str] = Query(EXAMPLE_INPUTS["single_date"], description="Single date in YYYY-MM-DD-HH-MM-SS-MM-SS format"),
+    dates: Optional[list[str]] = Query(EXAMPLE_INPUTS["multiple_dates"], description="Multiple dates in YYYY-MM-DD-HH-MM-SS format"),
+    api_key_header: APIKey = Depends(get_api_key)
+
 ):
     """
     GET route to obtain number of pages viewed for one or multiple dates.
@@ -95,8 +82,10 @@ def get_pages_viewed_api(
 
 @app.get("/visitors")
 def get_visitors_api(
-    date: Optional[str] = Query(exemple_inputs["single_date"], description="Single date in YYYY-MM-DD-HH-MM-SS-MM-SS format"),
-    dates: Optional[list[str]] = Query(exemple_inputs["multiple_dates"], description="Multiple dates in YYYY-MM-DD-HH-MM-SS format")
+    date: Optional[str] = Query(EXAMPLE_INPUTS["single_date"], description="Single date in YYYY-MM-DD-HH-MM-SS-MM-SS format"),
+    dates: Optional[list[str]] = Query(EXAMPLE_INPUTS["multiple_dates"], description="Multiple dates in YYYY-MM-DD-HH-MM-SS format"),
+    api_key_header: APIKey = Depends(get_api_key)
+
 ):
     """
     GET route to obtain number of visitors for one or multiple dates.
@@ -127,8 +116,9 @@ def get_visitors_api(
 @app.get("/articles/{category}")
 def get_articles_by_category(
     category: str,
-    date: Optional[str] = Query(exemple_inputs["single_date"], description="Single date in YYYY-MM-DD-HH-MM-SS-MM-SS format"),
-    dates: Optional[list[str]] = Query(exemple_inputs["multiple_dates"], description="Multiple dates in YYYY-MM-DD-HH-MM-SS format")
+    date: Optional[str] = Query(EXAMPLE_INPUTS["single_date"], description="Single date in YYYY-MM-DD-HH-MM-SS-MM-SS format"),
+    dates: Optional[list[str]] = Query(EXAMPLE_INPUTS["multiple_dates"], description="Multiple dates in YYYY-MM-DD-HH-MM-SS format"),
+    api_key_header: APIKey = Depends(get_api_key)
 ):
     """
     GET route to obtain number of articles in a category for one or multiple dates.
