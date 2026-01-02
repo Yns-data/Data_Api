@@ -1,29 +1,21 @@
 variable "project_id" {
-  type        = string
   description = "ID du projet GCP"
+  type        = string
 }
 
 variable "region" {
-  type    = string
-  default = "europe-west9"
+  description = "Région GCP"
+  type        = string
+  default     = "europe-west9"
 }
 
 variable "service_name" {
-  type    = string
-  default = "api-source"
-}
-
-variable "github_owner" {
-  type    = string
-  default = "Yns-data"
-}
-
-variable "github_repo" {
-  type    = string
-  default = "Data_Api"
-}
-
-variable "service_account" {
+  description = "Nom du service Cloud Run"
   type        = string
-  description = "Service account Cloud Run"
+  default     = "api-source"
+}
+
+variable "runtime_sa" {
+  description = "Service Account utilisé par Cloud Run ET Cloud Build"
+  type        = string
 }

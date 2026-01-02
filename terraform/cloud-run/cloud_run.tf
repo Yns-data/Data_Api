@@ -3,16 +3,13 @@ resource "google_cloud_run_v2_service" "api" {
   location = var.region
 
   template {
-    service_account = var.service_account
+    service_account = var.runtime_sa
     timeout         = "300s"
 
-    scaling {
-      min_instance_count = 1
-      max_instance_count = 5
-    }
-
     containers {
-      image = "${var.region}-docker.pkg.dev/${var.project_id}/cloud-run/data-api:latest"
+      image = "europe-west9-docker.pkg.dev/${var.project_id}/cloud-run/data-api:latest"
+
+      container_concurrency = 80
 
       ports {
         container_port = 8000
@@ -40,13 +37,11 @@ resource "google_cloud_run_v2_service" "api" {
         }
       }
     }
-
-    container_concurrency = 80
   }
 
   traffic {
-    percent         = 100
-    latest_revision = true
+    percent = 100
+    type    = "TRAFFIC_TARGET_ALLOCATION_TYPE_LATEST"
   }
 
   ingress = "INGRESS_TRAFFIC_ALL"
