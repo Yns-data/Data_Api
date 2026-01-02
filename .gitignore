@@ -1,1 +1,5 @@
 *.pyc
+terraform/cloud-run/.terraform/providers/registry.terraform.io/hashicorp/google/5.45.2/linux_amd64/terraform-provider-google_v5.45.2_x5
+terraform/cloud-run/.terraform/providers/registry.terraform.io/hashicorp/google/5.45.2/linux_amd64/LICENSE.txt
+.gitignore
+.gitignore
