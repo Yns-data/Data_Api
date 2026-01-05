@@ -1,0 +1,35 @@
+substitutions:
+  _REGION: europe-west9
+  _REPO: data-api
+  _IMAGE: fastapi-app
+
+
+steps:
+# 1️⃣ Build Docker
+- name: 'gcr.io/cloud-builders/docker'
+  args:
+    - build
+    - '-t'
+    - '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/${_IMAGE}:$SHORT_SHA'
+    - '.'
+
+# 2️⃣ Push image
+- name: 'gcr.io/cloud-builders/docker'
+  args:
+    - push
+    - '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/${_IMAGE}:$SHORT_SHA'
+
+# 3️⃣ Déployer Cloud Run via Terraform
+- name: 'hashicorp/terraform:1.6'
+  entrypoint: sh
+  args:
+    - -c
+    - |
+      cd terraform/cloud-run
+      terraform init
+      terraform apply -auto-approve \
+        -var="image_tag=$SHORT_SHA" \
+        
+
+options:
+  logging: CLOUD_LOGGING_ONLY

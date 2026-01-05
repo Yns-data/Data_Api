@@ -4,3 +4,5 @@ terraform/cloud-run/.terraform/providers/registry.terraform.io/hashicorp/google/
 .gitignore
 .gitignore
 terraform/cloud-run/.terraform.lock.hcl
+terraform/cloud-run/terraform.tfstate
+terraform/cloud-run/terraform.tfstate.backup

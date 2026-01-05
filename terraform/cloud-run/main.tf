@@ -1,3 +1,16 @@
+resource "google_cloud_run_v2_service_iam_member" "public_access" {
+  project  = var.project_id
+  location = var.region
+  name     = google_cloud_run_v2_service.api.name
+
+  role   = "roles/run.invoker"
+  member = "allUsers"
+}
+
+
+##################################
+# Cloud Run service
+##################################
 resource "google_cloud_run_v2_service" "api" {
   name     = var.service_name
   location = var.region
@@ -6,10 +19,15 @@ resource "google_cloud_run_v2_service" "api" {
     service_account = var.runtime_sa
     timeout         = "300s"
 
-    containers {
-      image = "europe-west9-docker.pkg.dev/${var.project_id}/cloud-run/data-api:latest"
+  
+    
+    scaling {
+      max_instance_count = 10
+      min_instance_count = 1
+    }
 
-      container_concurrency = 80
+    containers {
+      image = "${var.region}-docker.pkg.dev/${var.project_id}/data-api/fastapi-app:${var.image_tag}"
 
       ports {
         container_port = 8000
@@ -45,10 +63,4 @@ resource "google_cloud_run_v2_service" "api" {
   }
 
   ingress = "INGRESS_TRAFFIC_ALL"
-
-  lifecycle {
-    ignore_changes = [
-      template[0].containers[0].image
-    ]
-  }
 }
